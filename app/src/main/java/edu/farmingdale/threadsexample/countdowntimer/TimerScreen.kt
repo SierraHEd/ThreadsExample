@@ -5,6 +5,7 @@ import android.widget.NumberPicker
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.farmingdale.threadsexample.ui.theme.LightRed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
@@ -46,11 +48,13 @@ fun TimerScreen(
     modifier: Modifier = Modifier,
     timerViewModel: TimerViewModel = viewModel()
 ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.background(color = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) LightRed else Color.White)) {
         Box(
             modifier = modifier
                 .padding(20.dp)
-                .size(240.dp),
+                .size(240.dp)
+                .background(color = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) LightRed else Color.White),
             contentAlignment = Alignment.Center
         ) {
             if (timerViewModel.isRunning) {
