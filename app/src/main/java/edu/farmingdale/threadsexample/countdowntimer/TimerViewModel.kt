@@ -68,6 +68,15 @@ class TimerViewModel : ViewModel() {
         }
     }
 
+    //Reset vars to initial states
+    fun resetTimer() {
+        isRunning = false
+        remainingMillis = 0L
+        selectedHour = 0
+        selectedMinute = 0
+        selectedSecond = 0
+    }
+
     override fun onCleared() {
         super.onCleared()
         timerJob?.cancel()

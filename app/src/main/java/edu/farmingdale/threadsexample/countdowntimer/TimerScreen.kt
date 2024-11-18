@@ -96,6 +96,15 @@ fun TimerScreen(
                 Text("Start")
             }
         }
+        // I believe that the Cancel Button does the same
+        //Added Reset Button
+        Button(
+            onClick = {
+                timerViewModel.resetTimer()
+            }
+        ) {
+            Text("Reset")
+        }
     }
 }
 
