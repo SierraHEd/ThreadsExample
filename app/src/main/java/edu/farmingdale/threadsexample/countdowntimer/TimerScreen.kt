@@ -1,6 +1,6 @@
 package edu.farmingdale.threadsexample.countdowntimer
 
-import android.util.Log
+
 import android.widget.NumberPicker
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.util.Locale
 import kotlin.time.Duration
@@ -48,12 +53,24 @@ fun TimerScreen(
             contentAlignment = Alignment.Center
         ) {
             if (timerViewModel.isRunning) {
-
+                val targetProgress = 1 - (timerViewModel.remainingMillis.toFloat() / timerViewModel.totalMillis.toFloat())
+                val animatedProgress by animateFloatAsState(
+                    targetValue = targetProgress.coerceIn(0f, 1f),
+                    animationSpec = tween(durationMillis = 300), label = "" // Smooth animation
+                )
+                LinearProgressIndicator(
+                    progress = { animatedProgress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 20.dp, vertical = 30.dp)
+                )
             }
             Text(
                 text = timerText(timerViewModel.remainingMillis),
                 fontSize = 40.sp,
             )
+
         }
         TimePicker(
             hour = timerViewModel.selectedHour,
