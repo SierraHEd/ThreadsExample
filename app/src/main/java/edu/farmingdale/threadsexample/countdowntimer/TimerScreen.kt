@@ -1,6 +1,7 @@
 package edu.farmingdale.threadsexample.countdowntimer
 
 
+import android.media.MediaPlayer
 import android.widget.NumberPicker
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -29,12 +30,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import edu.farmingdale.threadsexample.R
 import edu.farmingdale.threadsexample.ui.theme.LightRed
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -48,6 +51,8 @@ fun TimerScreen(
     modifier: Modifier = Modifier,
     timerViewModel: TimerViewModel = viewModel()
 ) {
+    val context = LocalContext.current // Get the context
+
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.background(color = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) LightRed else Color.White)) {
         Box(
@@ -57,12 +62,14 @@ fun TimerScreen(
                 .background(color = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) LightRed else Color.White),
             contentAlignment = Alignment.Center
         ) {
+            //When the timer is running play linear progress bar animation
             if (timerViewModel.isRunning) {
                 val targetProgress = 1 - (timerViewModel.remainingMillis.toFloat() / timerViewModel.totalMillis.toFloat())
                 val animatedProgress by animateFloatAsState(
                     targetValue = targetProgress.coerceIn(0f, 1f),
                     animationSpec = tween(durationMillis = 300), label = "" // Smooth animation
                 )
+                //Initialize the Linear Progress Bar
                 LinearProgressIndicator(
                     progress = { animatedProgress },
                     modifier = Modifier
@@ -70,10 +77,18 @@ fun TimerScreen(
                         .align(Alignment.BottomCenter)
                         .padding(horizontal = 20.dp, vertical = 30.dp)
                 )
+
+                //Plays Sound right before timer reaches 0
+                if (timerViewModel.remainingMillis <= 1_000L) {
+                    val mediaPlayer = MediaPlayer.create(context, R.raw.airport)
+                    mediaPlayer?.start()
+                }
+
             }
             Text(
                 text = timerText(timerViewModel.remainingMillis),
                 fontSize = 40.sp,
+                //Changes color and boldness of font when timer is 10 sec or less
                 color = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) Color.Red else Color.Black,
                 fontWeight = if (timerViewModel.isRunning && timerViewModel.remainingMillis <= 10_000L) FontWeight.Bold else FontWeight.Normal
             )
@@ -104,7 +119,6 @@ fun TimerScreen(
                 Text("Start")
             }
         }
-        // I believe that the Cancel Button does the same
         //Added Reset Button
         Button(
             onClick = {
@@ -113,6 +127,7 @@ fun TimerScreen(
         ) {
             Text("Reset")
         }
+
     }
 }
 
@@ -201,3 +216,4 @@ fun NumberPickerWrapper(
         }
     )
 }
+

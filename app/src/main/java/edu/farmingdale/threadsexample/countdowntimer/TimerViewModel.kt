@@ -1,5 +1,8 @@
 package edu.farmingdale.threadsexample.countdowntimer
 
+import android.content.Context
+import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -7,12 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import edu.farmingdale.threadsexample.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class TimerViewModel : ViewModel() {
     private var timerJob: Job? = null
+
+    private var mediaPlayer: MediaPlayer? = null
 
     // Values selected in time picker
     var selectedHour by mutableIntStateOf(0)
@@ -79,6 +85,8 @@ class TimerViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        mediaPlayer?.release()
         timerJob?.cancel()
     }
+
 }
